@@ -20,19 +20,25 @@ model Customer {
 
 
 model Lead {
-  id         Int         @id @default(autoincrement())
-  customerId Int
-  customer   Customer    @relation(fields: [customerId], references: [id])
-  companyName String
-  status     String
-  interactions Interaction[]
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  phone         String
+  address       String?
+  companyName   String?
+  leadStatus    String
+  interactions  Interaction[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  Customer Customer[]
 }
 
 model Interaction {
-  id      Int    @id @default(autoincrement())
-  leadId  Int
-  lead    Lead   @relation(fields: [leadId], references: [id])
-  type    String
-  content String
-  date    DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  leadId    Int
+  type      String
+  details   String?
+  timestamp DateTime @default(now())
+  lead      Lead     @relation(fields: [leadId], references: [id])
 }
