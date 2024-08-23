@@ -2,10 +2,12 @@ import {
   Controller,
   Get,
   Post,
-  Body,
-  Param,
   Patch,
   Delete,
+  Param,
+  Body,
+  NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { LeadsService } from './leads.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
@@ -16,27 +18,58 @@ export class LeadsController {
   constructor(private readonly leadsService: LeadsService) {}
 
   @Post()
-  create(@Body() createLeadDto: CreateLeadDto) {
-    return this.leadsService.createLead(createLeadDto);
+  async createLead(@Body() createLeadDto: CreateLeadDto) {
+    try {
+      return await this.leadsService.createLead(createLeadDto);
+    } catch (error) {
+      throw new BadRequestException('Failed to create lead.');
+    }
   }
 
   @Get()
-  findAll() {
+  async findAllLeads() {
     return this.leadsService.findAllLeads();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.leadsService.findOneLead(id);
+  async findOneLead(@Param('id') id: string) {
+    const idNumber = parseInt(id, 10);
+    if (isNaN(idNumber)) {
+      throw new BadRequestException('Invalid ID format.');
+    }
+    const lead = await this.leadsService.findOneLead(idNumber);
+    if (!lead) {
+      throw new NotFoundException(`Lead with ID ${idNumber} not found.`);
+    }
+    return lead;
   }
 
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateLeadDto: UpdateLeadDto) {
-    return this.leadsService.updateLead(id, updateLeadDto);
+  async updateLead(
+    @Param('id') id: string,
+    @Body() updateLeadDto: UpdateLeadDto,
+  ) {
+    const idNumber = parseInt(id, 10);
+    if (isNaN(idNumber)) {
+      throw new BadRequestException('Invalid ID format.');
+    }
+    try {
+      return await this.leadsService.updateLead(idNumber, updateLeadDto);
+    } catch (error) {
+      throw new BadRequestException('Failed to update lead.');
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.leadsService.deleteLead(id);
+  async deleteLead(@Param('id') id: string) {
+    const idNumber = parseInt(id, 10);
+    if (isNaN(idNumber)) {
+      throw new BadRequestException('Invalid ID format.');
+    }
+    try {
+      return await this.leadsService.deleteLead(idNumber);
+    } catch (error) {
+      throw new BadRequestException('Failed to delete lead.');
+    }
   }
 }

@@ -8,37 +8,36 @@ generator client {
 }
 
 model Customer {
-  id          Int    @id @default(autoincrement())
-  name        String
-  email       String @unique
-  phone       String
-  address     String
-  companyName String
-
-  Lead Lead[]
+  id           Int         @id @default(autoincrement())
+  name         String
+  email        String      @unique
+  phone        String
+  address      String
+  companyName  String
+  leads        Lead[]
+  interactions Interaction[]
 }
 
-
 model Lead {
-  id            Int      @id @default(autoincrement())
-  name          String
-  email         String   @unique
-  phone         String
-  address       String?
-  companyName   String?
-  leadStatus    String
-  interactions  Interaction[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  Customer Customer[]
+  id           Int         @id @default(autoincrement())
+  name         String
+  email        String
+  phone        String
+  address      String
+  companyName  String
+  leadStatus   String
+  customerId   Int?
+  customer     Customer?   @relation(fields: [customerId], references: [id])
+  interactions Interaction[]
 }
 
 model Interaction {
-  id        Int      @id @default(autoincrement())
-  leadId    Int
-  type      String
-  details   String?
-  timestamp DateTime @default(now())
-  lead      Lead     @relation(fields: [leadId], references: [id])
+  id          Int      @id @default(autoincrement())
+  type        String
+  description String
+  date        DateTime @default(now())
+  leadId      Int
+  customerId  Int
+  lead        Lead     @relation(fields: [leadId], references: [id])
+  customer    Customer @relation(fields: [customerId], references: [id])
 }

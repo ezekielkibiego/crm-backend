@@ -1,21 +1,17 @@
 import { IsOptional, IsString, IsInt } from 'class-validator';
 
-export class UpdateLeadDto {
+export class UpdateInteractionDto {
   @IsOptional()
   @IsString()
-  phone?: string;
+  type?: string;
 
   @IsOptional()
   @IsString()
-  leadStatus?: string;
+  description?: string;
 
   @IsOptional()
-  @IsString()
-  address?: string;
-
-  @IsOptional()
-  @IsString()
-  companyName?: string;
+  @IsInt()
+  leadId?: number;
 
   @IsOptional()
   @IsInt()
